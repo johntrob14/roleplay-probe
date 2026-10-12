@@ -1,0 +1,9 @@
+USER MESSAGE (context only, not labeled):
+<<<
+{prompt}
+>>>
+
+PASSAGES TO LABEL ({n} passages):
+{passages}
+
+Return {{"rows": [...]}} with exactly {n} rows, P1 to P{n}.

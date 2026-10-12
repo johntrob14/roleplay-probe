@@ -1,0 +1,9 @@
+USER MESSAGE:
+<<<
+{prompt}
+>>>
+
+ASSISTANT REPLY:
+<<<
+{response}
+>>>

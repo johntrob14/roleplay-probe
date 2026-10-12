@@ -1,0 +1,3 @@
+Some rows in your answer are invalid:
+{problems}
+Return the complete corrected JSON object {{"rows": [...]}} with exactly {n} rows, P1 to P{n}. Each quote must be an exact substring of its own passage, copied character for character.
