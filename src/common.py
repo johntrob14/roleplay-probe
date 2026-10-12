@@ -47,9 +47,20 @@ def read_jsonl(path: Path):
             line = line.strip()
             if line:
                 try:
-                    yield json.loads(line)
+                    row = json.loads(line)
                 except json.JSONDecodeError:  # a partially written last line after a kill
                     continue
+                # Replay rows imported from parquet can carry NaN for a missing reasoning/completion.
+                for k in ("reasoning", "response"):
+                    if k in row and not isinstance(row[k], str):
+                        row[k] = ""
+                # vLLM's qwen3 reasoning parser leaves the newlines around </think> on the content;
+                # the chat template supplies them, so strip them here for every consumer.
+                if "reasoning" in row:
+                    row["reasoning"] = row["reasoning"].strip("\n")
+                if "response" in row:
+                    row["response"] = row["response"].lstrip("\n")
+                yield row
 
 
 def done_keys(path: Path, key: str = "rid") -> set:

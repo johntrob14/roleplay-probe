@@ -3,6 +3,8 @@
 # and the judge. The qwen3 reasoning parser splits <think> content into reasoning_content.
 set -euo pipefail
 cd /workspace/roleplay-probe
+export PATH="/workspace/roleplay-probe/.venv/bin:$PATH"
+[ -x .venv/bin/ninja ] || uv pip install --python .venv/bin/python ninja
 exec .venv/bin/vllm serve Qwen/Qwen3.6-27B \
   --served-model-name qwen3.6-27b \
   --dtype bfloat16 \

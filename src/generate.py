@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import datetime as dt
 import time
 
 from openai import AsyncOpenAI
@@ -19,9 +20,11 @@ from common import (BASE_URL, GEN_MAX_TOKENS, GEN_SAMPLING, INPUTS, ROLLOUTS, SE
 PROMPT_FILE = {"weirdchat_onpolicy": "weirdchat_prompts.jsonl", "wildchat": "wildchat_prompts.jsonl"}
 
 
-async def one(client, sem, src, p, k, out, stats):
+async def one(client, sem, src, p, k, out, stats, until):
     rid = f"{src}:{p['prompt_id']}:{k}"
     async with sem:
+        if until and dt.datetime.now(dt.timezone.utc) >= until:
+            return
         t0 = time.time()
         try:
             r = await client.chat.completions.create(
@@ -60,7 +63,8 @@ async def main(a):
     client = AsyncOpenAI(base_url=BASE_URL, api_key="x", timeout=3600)
     sem = asyncio.Semaphore(a.concurrency)
     stats = {"ok": 0, "err": 0}
-    await asyncio.gather(*(one(client, sem, a.source, p, k, out, stats) for p, k in todo))
+    until = dt.datetime.fromisoformat(a.until) if a.until else None
+    await asyncio.gather(*(one(client, sem, a.source, p, k, out, stats, until) for p, k in todo))
     print(f"{a.source}: finished, {stats['ok']} ok, {stats['err']} errors", flush=True)
 
 
@@ -70,4 +74,5 @@ if __name__ == "__main__":
     ap.add_argument("--samples", type=int, default=1)
     ap.add_argument("--concurrency", type=int, default=96)
     ap.add_argument("--limit", type=int, default=0)
+    ap.add_argument("--until", default="", help="UTC ISO time; no new requests start after it")
     asyncio.run(main(ap.parse_args()))
