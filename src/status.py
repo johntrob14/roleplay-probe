@@ -10,7 +10,7 @@ for f in sorted(ROLLOUTS.glob("*.jsonl")):
     ro[f.stem] = sum(1 for _ in read_jsonl(f))
 print("rollouts:", dict(ro))
 
-js = list(read_jsonl(JUDGE / "judgments.jsonl"))
+js = list({j["rid"]: j for j in reversed(list(read_jsonl(JUDGE / "judgments.jsonl")))}.values())  # first judgment per rid
 print("judged:", dict(Counter(j["source"] for j in js)))
 beh, out, pas, both = Counter(), Counter(), Counter(), Counter()
 for j in js:

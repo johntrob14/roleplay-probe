@@ -10,7 +10,7 @@ exec .venv/bin/vllm serve Qwen/Qwen3.6-27B \
   --dtype bfloat16 \
   --max-model-len 32768 \
   --gpu-memory-utilization 0.92 \
-  --max-num-seqs 192 \
+  --max-num-seqs 64 \
   --enable-prefix-caching \
   --reasoning-parser qwen3 \
   --limit-mm-per-prompt '{"image": 0, "video": 0}' \

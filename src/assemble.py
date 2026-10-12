@@ -59,6 +59,7 @@ def main():
     for j in read_jsonl(JUDGE / "judgments.jsonl"):
         if j["rid"] in have or j["rid"] not in rollouts:
             continue
+        have.add(j["rid"])  # two judge processes can both judge a rollout; keep the first judgment
         ro = rollouts[j["rid"]]
         text, prompt_len, r_off, resp_off = templated(ro)
         neg = NEG_LABEL_BY_SOURCE[ro["source"]]
